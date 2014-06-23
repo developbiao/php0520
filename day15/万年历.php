@@ -51,8 +51,14 @@
 				if ($i > $days || $i < 1){
 					echo "<td>&nbsp;</td>";
 				}else{
+					if($i % 3 == 0){
 
-				echo "<td>{$i}</td>";
+						echo "<td bgcolor='red'>{$i}</td>"; //个这background没有成功
+					}else{
+						echo "<td>{$i}</td>";
+
+					}
+
 			}
 				$i++;
 			}
