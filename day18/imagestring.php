@@ -5,11 +5,6 @@
 @Author:GongBiao
 */
 
-
-/*
-输出字体用字体
-*/
-
 $im = imagecreatetruecolor(500, 300);
 
 $white = imagecolorallocate($im,255, 255, 255);
@@ -23,16 +18,12 @@ $grayred = imagecolorallocate($im, 255, 100, 100);
 
 $str = "php is very much!";
 
-//$str = "龚彪你好！";
-$file2 = "fonts/simpfxo.ttf";
-$file = "fonts/BrushScriptStd.otf";
-imagettftext($im, 30, 0, 50, 200, $green, $file, $str);
-imagettftext($im, 30, -30, 50, 100, $red, $file2, "I love you LZH");
+imagestring($im, 5, 200, 200, $str, $red);
+
+
 
 header("content-type:image/png");
 
 imagepng($im);
-
-imagedestroy($im);
 
 ?>
