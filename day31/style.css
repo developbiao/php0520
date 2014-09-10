@@ -1,0 +1,14 @@
+@charset "utf-8";
+/*Style  Document*/
+.box1{
+	width:100px;
+	height:120px;
+	border :1px solid #F00;
+	padding-left:10px;	
+}
+.box2{
+	width:62px;
+	height:150px;
+	border:20px solid #00F;
+	padding-top:10px;
+}
