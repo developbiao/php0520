@@ -1,0 +1,23 @@
+@charset "utf-8";
+/*Float Box Css Style*/
+.box1{
+	width:100px;
+	height:100px;
+	border:1px solid #00FF00;
+	background-color:#ABABAB;
+	float:right;
+}
+.box2{
+	width:200px;
+	height:200px;
+	border:1px solid #00FF00;
+	background-color:#FF6;
+	float:right;
+}
+.box3{
+	width:300px;
+	height:300px;
+	border:1px solid #3f6;
+	background-color:#C6C;
+	clear:right; /*清除元素right边的浮动*/
+}
