@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" Content="text/html" charset="utf-8">
+	<title>relative_position</title>
+	<style type="text/css">
+	div #one,#tow,#three{
+		width:100px;
+		height:100px;
+		font-size:24px;
+		font-weight:bold;
+		position:relative;
+		float:left;
+
+	}
+
+	#main{background:black; 
+		border:5px dashed green;
+		width:500px;
+		height:500px;
+	}
+	#one{background:red;
+		top:30px;
+		left:70px;
+	}
+	#tow{background:green;
+		-top:150px;
+		bottom:-90px;
+
+	}
+	#three{background:blue; 
+		left:50px;
+	}
+
+	</style>
+</head>
+<body>
+	<div id="main">
+		<div id="one">1</div>
+		<div id="tow">2</div>
+		<div id="three">3</div>
+	</div>
+</body>
+</html>
