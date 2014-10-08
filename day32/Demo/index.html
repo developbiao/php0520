@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/css" charset="utf-8">
+	<title>首页</title>
+	<link href="./css/main.css" rel="stylesheet" type="text/css"/>
+	<link href="./js/mf-pattern/mF_fancy.css" rel="stylesheet" type="text/css"/>
+	<script src="js/setHomeSetFav.js" type="text/javascript" charset="gb2312"> </script>
+	<script type="text/javascript" src="js/myfocus-2.0.1.min.js"></script><!--引入myFocus库-->
+	<script type="text/javascript" src="js/mf-pattern/mF_fancy.js"></script><!--引入风格js文件-->
+	<link href="js/mf-pattern/mF_fancy.css" type="text/css" /><!--引入风格css文件-->
+	<script type="text/javascript">
+	//myFocus.set();方法
+	myFocus.set({
+    id:'boxID',//焦点图盒子ID
+    pattern:'mF_fancy',//风格应用的名称
+    time:3,//切换时间间隔(秒)
+    trigger:'click',//触发切换模式:'click'(点击)/'mouseover'(悬停)
+    width:1000,//设置图片区域宽度(像素)
+    height:310,//设置图片区域高度(像素)
+    txtHeight:'default'//文字层高度设置(像素),'default'为默认高度，0为隐藏
+});
+	</script>
+</head>
+<body>
+	<div class="top">
+		<div class="top_content">
+			<li><a href="#" onclick="">联系我们</a></li>
+			<li><a href="#" onclick="AddFavorite(window.location,doument.title)">加入收藏</li>
+			<li><a href="#" onclick="SetHome(window.location)">设为首页</a></li>
+		</ul>
+	</div><!-- top_content结束-->
+</div><!-- top 结束-->
+<div class="wrap">
+	<div class="log">
+		<div class="log_left"> 
+			<img src="images/logo.jpg"/ alt="慕课网"/>
+		</div>
+		<div class="log_right">
+			<img src="images/tel.jpg" alt="服务热线"/><span class="tel">24小时服务热线：123-456-789</span>
+		</div>
+	</div><!--logo结束 -->
+	<div class="nav">
+		<!--<div class="nav_left">nav_left问题</div>-->
+		<div class="nav_mid">
+			<div class="nav_mid_left">
+				<ul>
+					<li><a href="#">首页</a></li>
+					<li><a href="list.html">关于慕课网</a></li>
+					<li><a href="list.html">新闻动态 </a></li>
+					<li><a href="list.html">课程中心</a></li>
+					<li><a href="list.html"> 在线课程</a></li>
+					<li><a href="list.html">人才招聘</a></li>
+				</ul>
+			</div>
+			<div class="nav_mid_right">
+				<form action="" method="post">
+					<input type="text" class="search_text"/>
+				</form>
+			</div>
+		</div><!-- nav_mid结束-->
+		<div class="nav_right"></div>
+	</div><!-- nav 结束 -->
+	<div class="ad">
+		<div id="boxID"><!--焦点图盒子-->
+			<div class="loading"><img src="images/loading.gif" alt="请稍候..." /></div>
+			<!--载入画面(可删除)-->
+			<div class="pic"><!--内容列表(li数目可随意增减)-->
+				<ul>
+					<li><a href="#"><img src="images/ad2.jpg" thumb="" alt="" text="详细描述2" /></a></li>
+					<li><a href="#"><img src="images/ad3.jpg" thumb="" alt="" text="详细描述3" /></a></li>
+					<li><a href="#"><img src="images/ad4.jpg" thumb="" alt="" text="详细描述4" /></a></li>
+					<li><a href="#"><img src="images/ad3.jpg" thumb="" alt="" text="详细描述5" /></a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!--ad结束-->
+	<div class="main">
+		<div class="news"><!--news开始 --> 
+			<div class="title"><!-- title开始 -->
+				<h2 class="title_left">新闻中心</h2>
+				<span class="title_right"><a href="#">More&gt;&gt;</a> </span>
+			</div><!-- title结束 -->
+			<div class="pic_news"><!--pic_news 开始 -->
+				<img src="images/news.jpg" alt="520语慕课女神喊你来表白" width="133px" height="77px"/>
+				<h2><a href="news.html"> 520 慕课女神喊你来表白!</a></h2>
+				<p>活动时间: 5月20日-5月25日<br/>
+					获奖公布时间: 5月26日<br/>
+					<a href="#">LearnMore&gt;&gt;</a><br/>
+				 </p>
+			</div><!-- pic_news 结束-->
+			<div class="news_list">
+				<ul>
+					<li><span>2014-06-01</span><a href="news.html">【慕课访谈 用户篇】 “有为吊丝”在路上</a></li>
+					<li><span>2014-06-01</span><a href="news.html">【有奖活动】给父亲的三行书信</a></li>
+					<li><span>2014-05-30</span><a href="news.html">《程序猿，请晒出你的童年》活动获奖公告</a></li>
+					<li><span>2014-05-28</span><a href="news.html">【慕课访谈】破茧成蝶——美女程序员的蜕变史</a></li>
+				</ul>
+
+			</div>
+		</div><!--news 结束 -->
+		<div class="course">course </div>
+		<div class="sidebar"> sidebar</div>
+	</div><!-- mian结束 -->
+</div><!-- wrap End -->
+
+</body>
+</html>
