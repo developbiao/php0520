@@ -1,9 +1,9 @@
 <?php
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
- * Parse and analyse a SQL query
  *
- * @package PhpMyAdmin
+ * @version $Id: parse_analyze.lib.php 11986 2008-11-24 11:05:40Z nijel $
+ * @package phpMyAdmin
  */
 if (! defined('PHPMYADMIN')) {
     exit;
@@ -16,7 +16,7 @@ $GLOBALS['unparsed_sql'] = $sql_query;
 $parsed_sql = PMA_SQP_parse($sql_query);
 $analyzed_sql = PMA_SQP_analyze($parsed_sql);
 
-// for bug 780516: now that we use case insensitive preg_match
+// lem9: for bug 780516: now that we use case insensitive preg_match
 // or flags from the analyser, do not put back the reformatted query
 // into $sql_query, to make this kind of query work without
 // capitalizing keywords:
@@ -47,14 +47,13 @@ if ($is_select) {
         $table = $analyzed_sql[0]['table_ref'][0]['table_true_name'];
     }
     if (isset($analyzed_sql[0]['table_ref'][0]['db'])
-        && strlen($analyzed_sql[0]['table_ref'][0]['db'])
-    ) {
+      && strlen($analyzed_sql[0]['table_ref'][0]['db'])) {
         $db    = $analyzed_sql[0]['table_ref'][0]['db'];
     } else {
         $db = $prev_db;
     }
     // Nijel: don't change reload, if we already decided to reload in import
-    if (empty($reload) && empty($GLOBALS['is_ajax_request'])) {
+    if (empty($reload)) {
         $reload  = ($db == $prev_db) ? 0 : 1;
     }
 }

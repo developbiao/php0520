@@ -4,7 +4,8 @@
  * configures general layout
  * for detailed layout configuration please refer to the css files
  *
- * @package    PhpMyAdmin-theme
+ * @version $Id: layout.inc.php 10515 2007-07-22 16:22:54Z lem9 $
+ * @package phpMyAdmin-theme
  * @subpackage Original
  */
 
@@ -12,7 +13,7 @@
  * navi frame
  */
 // navi frame width
-$GLOBALS['cfg']['NaviWidth']                = 240;
+$GLOBALS['cfg']['NaviWidth']                = 200;
 
 // foreground (text) color for the navi frame
 $GLOBALS['cfg']['NaviColor']                = '#000000';
@@ -24,6 +25,8 @@ $GLOBALS['cfg']['NaviBackground']           = '#D0DCE0';
 $GLOBALS['cfg']['NaviPointerColor']         = '#000000';
 // background of the pointer in navi frame
 $GLOBALS['cfg']['NaviPointerBackground']    = '#9999CC';
+// text color of the selected database name (when showing the table list)
+$GLOBALS['cfg']['NaviDatabaseNameColor']    = '#0000FF';
 
 /**
  * main frame
@@ -33,6 +36,7 @@ $GLOBALS['cfg']['MainColor']                = '#000000';
 
 // background for the main frame
 $GLOBALS['cfg']['MainBackground']           = '#F5F5F5';
+//$GLOBALS['cfg']['MainBackground']       = '#F5F5F5 url(' . $_SESSION['PMA_Theme']->getImgPath() . 'vertical_line.png) repeat-y';
 
 // foreground (text) color of the pointer in browse mode
 $GLOBALS['cfg']['BrowsePointerColor']       = '#000000';
@@ -40,8 +44,7 @@ $GLOBALS['cfg']['BrowsePointerColor']       = '#000000';
 // background of the pointer in browse mode
 $GLOBALS['cfg']['BrowsePointerBackground']  = '#CCFFCC';
 
-// foreground (text) color of the marker (visually marks row by clicking on it)
-// in browse mode
+// foreground (text) color of the marker (visually marks row by clicking on it) in browse mode
 $GLOBALS['cfg']['BrowseMarkerColor']        = '#000000';
 
 // background of the marker (visually marks row by clicking on it) in browse mode
@@ -110,29 +113,4 @@ $GLOBALS['cfg']['SQP']['fmtColor']      = array(
     'quote_single'       => '',
     'quote_backtick'     => ''
 );
-
-/**
- * Chart colors
- */
-
- $GLOBALS['cfg']['chartColor'] = array(
-    'gradientIntensity'       => 0,
-    // The style of the chart title.
-    'titleColor'              => '#000000',
-    'titleBgColor'            => $GLOBALS['cfg']['ThBackground'],
-    // Chart border (0 for no border)
-    'border'                  => '#CCCCCC',
-    // Chart background color.
-    'bgColor'                 => $GLOBALS['cfg']['BgTwo'],
-    // when graph area gradient is used, this is the color of the graph
-    // area border
-    'graphAreaColor'          =>  '#D5D9DD',
-    // the background color of the inner graph area
-    'graphAreaGradientColor'  => $GLOBALS['cfg']['BgOne'],
-    // the color of the grid lines in the graph area
-    'gridColor'               => '#E6E6E6',
-    // the color of the scale and the labels
-    'scaleColor'              => '#D5D9DD',
- );
-
 ?>

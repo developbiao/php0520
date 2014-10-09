@@ -3,75 +3,60 @@
 /**
  * dumps a database
  *
- * @package PhpMyAdmin
+ * @version $Id: db_export.php 11982 2008-11-24 10:32:56Z nijel $
+ * @uses    libraries/db_common.inc.php
+ * @uses    libraries/db_info.inc.php
+ * @uses    libraries/display_export.lib.php
+ * @uses    $tables     from libraries/db_info.inc.php
+ * @package phpMyAdmin
  */
 
 /**
  * Gets some core libraries
  */
-require_once 'libraries/common.inc.php';
-
-$response = PMA_Response::getInstance();
-$header   = $response->getHeader();
-$scripts  = $header->getScripts();
-$scripts->addFile('export.js');
+require_once './libraries/common.inc.php';
 
 // $sub_part is also used in db_info.inc.php to see if we are coming from
 // db_export.php, in which case we don't obey $cfg['MaxTableList']
 $sub_part  = '_export';
-require_once 'libraries/db_common.inc.php';
+require_once './libraries/db_common.inc.php';
 $url_query .= '&amp;goto=db_export.php';
-require_once 'libraries/db_info.inc.php';
+require_once './libraries/db_info.inc.php';
 
 /**
  * Displays the form
  */
-$export_page_title = __('View dump (schema) of database');
+$export_page_title = $strViewDumpDB;
 
 // exit if no tables in db found
 if ($num_tables < 1) {
-    PMA_Message::error(__('No tables found in database.'))->display();
+    PMA_Message::error('strNoTablesFound')->display();
+    require './libraries/footer.inc.php';
     exit;
 } // end if
 
-$multi_values  = '<div>';
-$multi_values .= '<a href="#"';
-$multi_values .= ' onclick="setSelectOptions(\'dump\', \'table_select[]\', true); return false;">';
-$multi_values .= __('Select All');
-$multi_values .= '</a>';
-$multi_values .= ' / ';
-$multi_values .= '<a href="#"';
-$multi_values .= ' onclick="setSelectOptions(\'dump\', \'table_select[]\', false); return false;">';
-$multi_values .= __('Unselect All');
-$multi_values .= '</a><br />';
+$checkall_url = 'db_export.php?'
+              . PMA_generate_common_url($db)
+              . '&amp;goto=db_export.php';
 
-$multi_values .= '<select name="table_select[]" id="table_select" size="10" multiple="multiple">';
+$multi_values = '<div align="center">';
+$multi_values .= '<a href="' . $checkall_url . '" onclick="setSelectOptions(\'dump\', \'table_select[]\', true); return false;">' . $strSelectAll . '</a>
+        /
+        <a href="' . $checkall_url . '&amp;unselectall=1" onclick="setSelectOptions(\'dump\', \'table_select[]\', false); return false;">' . $strUnselectAll . '</a><br />';
+
+$multi_values .= '<select name="table_select[]" size="6" multiple="multiple">';
 $multi_values .= "\n";
 
-if (!empty($selected_tbl) && empty($table_select)) {
-    $table_select = $selected_tbl;
-}
-
-// Check if the selected tables are defined in $_GET
-// (from clicking Back button on export.php)
-if (isset($_GET['table_select'])) {
-    $_GET['table_select'] = urldecode($_GET['table_select']);
-    $_GET['table_select'] = explode(",", $_GET['table_select']);
-}
-
 foreach ($tables as $each_table) {
-    if (isset($_GET['table_select'])) {
-        if (in_array($each_table['Name'], $_GET['table_select'])) {
-            $is_selected = ' selected="selected"';
-        } else {
-            $is_selected = '';
-        }
-    } elseif (isset($table_select)) {
-        if (in_array($each_table['Name'], $table_select)) {
-            $is_selected = ' selected="selected"';
-        } else {
-            $is_selected = '';
-        }
+    // ok we show also views
+    //if (is_null($each_table['Engine'])) {
+        // Don't offer to export views yet.
+    //    continue;
+    //}
+    if (! empty($unselectall)
+      || (isset($tmp_select)
+           && false !== strpos($tmp_select, '|' . $each_table['Name'] . '|'))) {
+        $is_selected = '';
     } else {
         $is_selected = ' selected="selected"';
     }
@@ -80,11 +65,14 @@ foreach ($tables as $each_table) {
         . $is_selected . '>'
         . str_replace(' ', '&nbsp;', $table_html) . '</option>' . "\n";
 } // end for
-
 $multi_values .= "\n";
-$multi_values .= '</select></div>';
+$multi_values .= '</select></div><br />';
 
 $export_type = 'database';
-require_once 'libraries/display_export.lib.php';
+require_once './libraries/display_export.lib.php';
 
+/**
+ * Displays the footer
+ */
+require_once './libraries/footer.inc.php';
 ?>

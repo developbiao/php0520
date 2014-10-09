@@ -1,0 +1,91 @@
+-- user表
+-- 用户表
+CREATE TABLE IF NOT EXISTS user(
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	username VARCHAR(50) NOT NULL,
+	password VARCHAR(50) NOT NULL,
+	regtime INT NOT NULL,
+	admin TINYINT NOT NULL,
+	PRIMARY KEY(id)
+);
+
+-- shopclass表
+-- 商品分类表
+CREATE TABLE IF NOT EXISTS shopclass(
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	name VARCHAR(50) NOT NULL,
+	PRIMARY KEY(id)
+);
+
+-- brand表
+-- 商品品牌表
+CREATE TABLE IF NOT EXISTS brand(
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	name VARCHAR(50) NOT NULL,
+	shopclass_id INT NOT NULL,
+	PRIMARY KEY(id)
+);
+
+-- shop表
+-- 商品表
+CREATE TABLE IF NOT EXISTS shop(
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	name VARCHAR(50) NOT NULL,
+	price FLOAT NOT NULL,
+	stock INT NOT NULL,
+	shelf TINYINT NOT NULL,
+	image VARCHAR(100) NOT NULL,
+	brand_id INT NOT NULL,
+	PRIMARY KEY(id)
+
+);
+
+-- orderstat 表
+-- 订单状态表
+CREATE TABLE IF NOT EXISTS orderstat(
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	name VARCHAR(50) NOT NULL,
+	PRIMARY KEY(id)
+);
+
+-- relation 表
+-- 联系表
+
+CREATE TABLE IF NOT EXISTS relation(
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	realname VARCHAR(50) NOT NULL,
+	address VARCHAR(200) NOT NULL,
+	telephone VARCHAR(20) NOT NULL,
+	email VARCHAR(50) NOT NULL,
+	user_id INT NOT NULL,
+	PRIMARY KEY(id)
+
+);
+
+
+-- orders表
+-- 订单表
+CREATE TABLE IF NOT EXISTS orders(
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	code VARCHAR(50) NOT NULL,
+	user_id INT NOT NULL,
+	shop_id INT NOT NULL,
+	num INT NOT NULL,
+	price FLOAT NOT NULL,
+	time INT NOT NULL,
+	orderstat_id INT NOT NULL,
+	relation_id INT NOT NULL,
+	PRIMARY KEY(id)
+
+);
+
+-- commit 表
+-- 商品评论表
+CREATE TABLE IF NOT EXISTS commit(
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	content text,
+	user_id INT NOT NULL,
+	shop_id INT NOT NULL,
+	PRIMARY KEY(id)
+);
+

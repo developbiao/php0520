@@ -3,7 +3,8 @@
 /**
  * Theme information
  *
- * @package    PhpMyAdmin-theme
+ * @version $Id: info.inc.php 10145 2007-03-20 13:39:12Z cybot_tm $
+ * @package phpMyAdmin-theme
  * @subpackage Original
  */
 

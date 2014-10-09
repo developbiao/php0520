@@ -1,23 +1,22 @@
 <?php
-/* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  * Front controller for config view / download and clear
  *
- * @package PhpMyAdmin-Setup
+ * @package    phpMyAdmin-setup
+ * @author     Piotr Przybylski <piotrprz@gmail.com>
+ * @license    http://www.gnu.org/licenses/gpl.html GNU GPL 2.0
+ * @version    $Id: config.php 12348 2009-04-14 10:19:02Z nijel $
  */
 
 /**
  * Core libraries.
  */
 require './lib/common.inc.php';
-require_once './libraries/config/Form.class.php';
-require_once './libraries/config/FormDisplay.class.php';
-require_once './setup/lib/ConfigGenerator.class.php';
-
-require './libraries/config/setup.forms.php';
+require_once './setup/lib/Form.class.php';
+require_once './setup/lib/FormDisplay.class.php';
 
 $form_display = new FormDisplay();
-$form_display->registerForm('_config.php', $forms['_config.php']);
+$form_display->registerForm('_config.php');
 $form_display->save('_config.php');
 $config_file_path = ConfigFile::getInstance()->getFilePath();
 
@@ -26,51 +25,52 @@ if (isset($_POST['eol'])) {
 }
 
 if (PMA_ifSetOr($_POST['submit_clear'], '')) {
-    //
-    // Clear current config and return to main page
-    //
-    ConfigFile::getInstance()->resetConfigData();
+	//
+	// Clear current config and return to main page
+	//
+	$_SESSION['ConfigFile'] = array();
     // drop post data
     header('HTTP/1.1 303 See Other');
     header('Location: index.php');
     exit;
 } elseif (PMA_ifSetOr($_POST['submit_download'], '')) {
-    //
-    // Output generated config file
-    //
-    PMA_downloadHeader('config.inc.php', 'text/plain');
-    echo ConfigGenerator::getConfigFile();
+	//
+	// Output generated config file
+	//
+    header('Content-Type: text/plain');
+    header('Content-Disposition: attachment; filename="config.inc.php"');
+    echo ConfigFile::getInstance()->getConfigFile();
     exit;
 } elseif (PMA_ifSetOr($_POST['submit_save'], '')) {
-    //
-    // Save generated config file on the server
-    //
-    file_put_contents($config_file_path, ConfigGenerator::getConfigFile());
+	//
+	// Save generated config file on the server
+	//
+    file_put_contents($config_file_path, ConfigFile::getInstance()->getConfigFile());
     header('HTTP/1.1 303 See Other');
-    header('Location: index.php?action_done=config_saved');
+    header('Location: index.php');
     exit;
 } elseif (PMA_ifSetOr($_POST['submit_load'], '')) {
-    //
-    // Load config file from the server
-    //
+	//
+	// Load config file from the server
+	//
     $cfg = array();
-    include_once $config_file_path;
-    ConfigFile::getInstance()->setConfigData($cfg);
+    require_once $config_file_path;
+    $_SESSION['ConfigFile'] = $cfg;
     header('HTTP/1.1 303 See Other');
     header('Location: index.php');
     exit;
 } elseif (PMA_ifSetOr($_POST['submit_delete'], '')) {
-    //
-    // Delete config file on the server
-    //
+	//
+	// Delete config file on the server
+	//
     @unlink($config_file_path);
     header('HTTP/1.1 303 See Other');
     header('Location: index.php');
     exit;
 } else {
-    //
-    // Show generated config file in a <textarea>
-    //
+	//
+	// Show generated config file in a <textarea>
+	//
     header('HTTP/1.1 303 See Other');
     header('Location: index.php?page=config');
     exit;

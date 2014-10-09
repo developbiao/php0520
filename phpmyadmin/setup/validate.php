@@ -1,9 +1,12 @@
 <?php
-/* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  * Validation callback.
  *
- * @package PhpMyAdmin-Setup
+ * @package    phpMyAdmin-setup
+ * @author     Piotr Przybylski <piotrprz@gmail.com>
+ * @copyright  Copyright (c) 2008, Piotr Przybylski <piotrprz@gmail.com>
+ * @license    http://www.gnu.org/licenses/gpl.html GNU GPL 2.0
+ * @version    $Id: validate.php 11983 2008-11-24 10:33:42Z nijel $
  */
 
 /**
@@ -12,17 +15,17 @@
 require './lib/common.inc.php';
 
 $validators = array();
-require './libraries/config/validate.lib.php';
+require './setup/lib/validate.lib.php';
 
 header('Content-type: application/json');
 
 $vids = explode(',', filter_input(INPUT_POST, 'id'));
 $values = json_decode(filter_input(INPUT_POST, 'values'));
 if (!($values instanceof stdClass)) {
-    PMA_fatalError(__('Wrong data'));
+    die('Wrong data');
 }
 $values = (array)$values;
-$result = PMA_config_validate($vids, $values, true);
+$result = validate($vids, $values, true);
 if ($result === false) {
     $result = 'Wrong data or no validation for ' . $vids;
 }

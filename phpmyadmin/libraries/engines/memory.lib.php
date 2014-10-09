@@ -1,29 +1,20 @@
 <?php
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
- * The MEMORY (HEAP) storage engine
- *
- * @package PhpMyAdmin-Engines
+ * @version $Id: memory.lib.php 11981 2008-11-24 10:18:44Z nijel $
+ * @package phpMyAdmin-Engines
  */
-if (! defined('PHPMYADMIN')) {
-    exit;
-}
-
-if (! defined('PHPMYADMIN')) {
-    exit;
-}
 
 /**
- * The MEMORY (HEAP) storage engine
- *
- * @package PhpMyAdmin-Engines
+ * the MEMORY (HEAP) storage engine
+ * @package phpMyAdmin-Engines
  */
 class PMA_StorageEngine_memory extends PMA_StorageEngine
 {
     /**
-     * Returns array with variable names dedicated to MEMORY storage engine
+     * returns array with variable names dedicated to MyISAM storage engine
      *
-     * @return array   variable names
+     * @return  array   variable names
      */
     function getVariables()
     {

@@ -2,7 +2,8 @@
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  *
- * @package PhpMyAdmin
+ * @version $Id: transformation_wrapper.php 11994 2008-11-24 11:22:44Z nijel $
+ * @package phpMyAdmin
  */
 
 /**
@@ -14,6 +15,7 @@ define('IS_TRANSFORMATION_WRAPPER', true);
  * Gets a core script and starts output buffering work
  */
 require_once './libraries/common.inc.php';
+require_once './libraries/relation.lib.php'; // foreign keys
 require_once './libraries/transformations.lib.php'; // Transformations
 $cfgRelation = PMA_getRelationsParam();
 
@@ -24,47 +26,20 @@ require_once './libraries/db_table_exists.lib.php';
 
 
 /**
- * Sets globals from $_REQUEST
- */
-$request_params = array(
-    'cn',
-    'ct',
-    'newHeight',
-    'newWidth',
-    'resize',
-    'sql_query',
-    'transform_key',
-    'where_clause'
-);
-foreach ($request_params as $one_request_param) {
-    if (isset($_REQUEST[$one_request_param])) {
-        $GLOBALS[$one_request_param] = $_REQUEST[$one_request_param];
-    }
-}
-
-
-/**
  * Get the list of the fields of the current table
  */
 PMA_DBI_select_db($db);
-if (isset($where_clause)) {
-    $result = PMA_DBI_query(
-        'SELECT * FROM ' . PMA_Util::backquote($table) . ' WHERE ' . $where_clause . ';',
-        null,
-        PMA_DBI_QUERY_STORE
-    );
-    $row = PMA_DBI_fetch_assoc($result);
+$table_def = PMA_DBI_query('SHOW FIELDS FROM ' . PMA_backquote($table), null, PMA_DBI_QUERY_STORE);
+if (isset($primary_key)) {
+    $result      = PMA_DBI_query('SELECT * FROM ' . PMA_backquote($table) . ' WHERE ' . $primary_key . ';', null, PMA_DBI_QUERY_STORE);
+    $row         = PMA_DBI_fetch_assoc($result);
 } else {
-    $result = PMA_DBI_query(
-        'SELECT * FROM ' . PMA_Util::backquote($table) . ' LIMIT 1;',
-        null,
-        PMA_DBI_QUERY_STORE
-    );
-    $row = PMA_DBI_fetch_assoc($result);
+    $result      = PMA_DBI_query('SELECT * FROM ' . PMA_backquote($table) . ' LIMIT 1;', null, PMA_DBI_QUERY_STORE);
+    $row         = PMA_DBI_fetch_assoc($result);
 }
 
 // No row returned
-if (! $row) {
+if (!$row) {
     exit;
 } // end if (no record returned)
 
@@ -72,10 +47,7 @@ $default_ct = 'application/octet-stream';
 
 if ($cfgRelation['commwork'] && $cfgRelation['mimework']) {
     $mime_map = PMA_getMime($db, $table);
-    $mime_options = PMA_transformation_getOptions(
-        isset($mime_map[$transform_key]['transformation_options'])
-        ? $mime_map[$transform_key]['transformation_options'] : ''
-    );
+    $mime_options = PMA_transformation_getOptions((isset($mime_map[$transform_key]['transformation_options']) ? $mime_map[$transform_key]['transformation_options'] : ''));
 
     foreach ($mime_options AS $key => $option) {
         if (substr($option, 0, 10) == '; charset=') {
@@ -84,23 +56,24 @@ if ($cfgRelation['commwork'] && $cfgRelation['mimework']) {
     }
 }
 
-// Only output the http headers
-$response = PMA_Response::getInstance();
-$response->getHeader()->sendHttpHeaders();
+// garvin: For re-usability, moved http-headers and stylesheets
+// to a seperate file. It can now be included by libraries/header.inc.php,
+// querywindow.php.
 
+require_once './libraries/header_http.inc.php';
 // [MIME]
-if (isset($ct) && ! empty($ct)) {
-    $mime_type = $ct;
+if (isset($ct) && !empty($ct)) {
+    $content_type = 'Content-Type: ' . $ct;
 } else {
-    $mime_type = (isset($mime_map[$transform_key]['mimetype'])
-        ? str_replace('_', '/', $mime_map[$transform_key]['mimetype'])
-        : $default_ct)
-    . (isset($mime_options['charset']) ? $mime_options['charset'] : '');
+    $content_type = 'Content-Type: ' . (isset($mime_map[$transform_key]['mimetype']) ? str_replace('_', '/', $mime_map[$transform_key]['mimetype']) : $default_ct) . (isset($mime_options['charset']) ? $mime_options['charset'] : '');
+}
+header($content_type);
+
+if (isset($cn) && !empty($cn)) {
+    header('Content-Disposition: attachment; filename=' . $cn);
 }
 
-PMA_downloadHeader($cn, $mime_type);
-
-if (! isset($resize)) {
+if (!isset($resize)) {
     echo $row[$transform_key];
 } else {
     // if image_*__inline.inc.php finds that we can resize,
@@ -117,7 +90,7 @@ if (! isset($resize)) {
     $ratioWidth = $srcWidth/$newWidth;
     $ratioHeight = $srcHeight/$newHeight;
 
-    if ($ratioWidth < $ratioHeight) {
+    if ($ratioWidth < $ratioHeight){
         $destWidth = $srcWidth/$ratioHeight;
         $destHeight = $newHeight;
     } else {
@@ -129,16 +102,12 @@ if (! isset($resize)) {
         $destImage = ImageCreateTrueColor($destWidth, $destHeight);
     }
 
-    // ImageCopyResized($destImage, $srcImage, 0, 0, 0, 0,
-    // $destWidth, $destHeight, $srcWidth, $srcHeight);
-    // better quality but slower:
-    ImageCopyResampled(
-        $destImage, $srcImage, 0, 0, 0, 0, $destWidth,
-        $destHeight, $srcWidth, $srcHeight
-    );
+//    ImageCopyResized($destImage, $srcImage, 0, 0, 0, 0, $destWidth, $destHeight, $srcWidth, $srcHeight);
+// better quality but slower:
+    ImageCopyResampled($destImage, $srcImage, 0, 0, 0, 0, $destWidth, $destHeight, $srcWidth, $srcHeight);
 
     if ($resize == 'jpeg') {
-        ImageJPEG($destImage, null, 75);
+        ImageJPEG($destImage, '', 75);
     }
     if ($resize == 'png') {
         ImagePNG($destImage);

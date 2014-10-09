@@ -1,9 +1,11 @@
 <?php
-/* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  * Menu items
  *
- * @package PhpMyAdmin-Setup
+ * @package    phpMyAdmin-setup
+ * @author     Piotr Przybylski <piotrprz@gmail.com>
+ * @license    http://www.gnu.org/licenses/gpl.html GNU GPL 2.0
+ * @version    $Id: menu.inc.php 11650 2008-10-14 10:31:07Z crackpl $
  */
 
 if (!defined('PHPMYADMIN')) {
@@ -13,11 +15,10 @@ if (!defined('PHPMYADMIN')) {
 $separator = PMA_get_arg_separator('html');
 ?>
 <ul>
-    <li><a href="index.php"><?php echo __('Overview') ?></a></li>
-    <li><a href="?page=form<?php echo $separator ?>formset=Features"><?php echo __('Features') ?></a></li>
-    <li><a href="?page=form<?php echo $separator ?>formset=Sql_queries"><?php echo __('SQL queries') ?></a></li>
-    <li><a href="?page=form<?php echo $separator ?>formset=Navi_panel"><?php echo __('Navigation panel') ?></a></li>
-    <li><a href="?page=form<?php echo $separator ?>formset=Main_panel"><?php echo __('Main panel') ?></a></li>
-    <li><a href="?page=form<?php echo $separator ?>formset=Import"><?php echo __('Import') ?></a></li>
-    <li><a href="?page=form<?php echo $separator ?>formset=Export"><?php echo __('Export') ?></a></li>
+	<li><a href="index.php"><?php echo $GLOBALS['strSetupOverview'] ?></a></li>
+	<li><a href="?page=form<?php echo $separator ?>formset=features"><?php echo $GLOBALS['strSetupFormset_features'] ?></a></li>
+	<li><a href="?page=form<?php echo $separator ?>formset=left_frame"><?php echo $GLOBALS['strSetupForm_Left_frame'] ?></a></li>
+	<li><a href="?page=form<?php echo $separator ?>formset=main_frame"><?php echo $GLOBALS['strSetupForm_Main_frame'] ?></a></li>
+	<li><a href="?page=form<?php echo $separator ?>formset=import"><?php echo $GLOBALS['strImport'] ?></a></li>
+	<li><a href="?page=form<?php echo $separator ?>formset=export"><?php echo $GLOBALS['strExport'] ?></a></li>
 </ul>

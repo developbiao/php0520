@@ -1,36 +1,30 @@
 <?php
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
- * @package PhpMyAdmin-Engines
+ * @version $Id: mrg_myisam.lib.php 11981 2008-11-24 10:18:44Z nijel $
+ * @package phpMyAdmin-Engines
  */
-if (! defined('PHPMYADMIN')) {
-    exit;
-}
-
-if (! defined('PHPMYADMIN')) {
-    exit;
-}
 
 /**
  *
  */
-require_once './libraries/engines/merge.lib.php';
+include_once './libraries/engines/merge.lib.php';
 
 /**
  *
- * @package PhpMyAdmin-Engines
+ * @package phpMyAdmin-Engines
  */
 class PMA_StorageEngine_mrg_myisam extends PMA_StorageEngine_merge
 {
     /**
      * returns string with filename for the MySQL helppage
-     * about this storage engine
+     * about this storage engne
      *
-     * @return string  mysql helppage filename
+     * @return  string  mysql helppage filename
      */
     function getMysqlHelpPage()
     {
-        return 'merge-storage-engine';
+        return 'merge';
     }
 }
 

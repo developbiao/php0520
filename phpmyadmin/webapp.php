@@ -1,10 +1,9 @@
 <?php
-/* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  * generate an WebApp file for Prism / WebRunner
  *
- * @package PhpMyAdmin
- * @see     http://wiki.mozilla.org/Prism
+ * @see http://wiki.mozilla.org/Prism
+ * @package phpMyAdmin
  */
 
 /**
@@ -14,16 +13,16 @@ define('PMA_MINIMUM_COMMON', true);
 /**
  * Gets core libraries and defines some variables
  */
-require './libraries/common.inc.php';
+require_once './libraries/common.inc.php';
 /**
  * ZIP file handler.
  */
-require './libraries/zip.lib.php';
+require_once './libraries/zip.lib.php';
 
 // ini file
 $parameters = array(
     'id'        => 'phpMyAdmin@' . $_SERVER['HTTP_HOST'],
-    'uri'       => $GLOBALS['PMA_Config']->get('PmaAbsoluteUri'),
+    'uri'       => $_SESSION['PMA_Config']->get('PmaAbsoluteUri'),
     'status'    => 'yes',
     'location'  => 'no',
     'sidebar'   => 'no',
@@ -45,11 +44,11 @@ foreach ($parameters as $key => $value) {
     $ini_file .= $key . '=' . $value . "\n";
 }
 
-PMA_downloadHeader($name, 'application/webapp', 0, false);
-
-$zip = new ZipFile;
-$zip->setDoWrite();
+$zip = new zipfile;
 $zip->addFile($ini_file, 'webapp.ini');
 $zip->addFile(file_get_contents($icon), 'phpMyAdmin.ico');
-$zip->file();
+
+header('Content-Type: application/webapp');
+header('Content-Disposition: attachment; filename="' . $name . '"');
+echo $zip->file();
 ?>

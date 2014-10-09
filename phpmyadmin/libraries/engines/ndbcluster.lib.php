@@ -1,29 +1,18 @@
 <?php
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
- * The NDBCLUSTER storage engine
- *
- * @package PhpMyAdmin-Engines
+ * @version $Id: ndbcluster.lib.php 11981 2008-11-24 10:18:44Z nijel $
+ * @package phpMyAdmin-Engines
  */
-if (! defined('PHPMYADMIN')) {
-    exit;
-}
-
-if (! defined('PHPMYADMIN')) {
-    exit;
-}
 
 /**
- * The NDBCLUSTER storage engine
  *
- * @package PhpMyAdmin-Engines
+ * @package phpMyAdmin-Engines
  */
 class PMA_StorageEngine_ndbcluster extends PMA_StorageEngine
 {
     /**
-     * Returns array with variable names realted to NDBCLUSTER storage engine
-     *
-     * @return array   variable names
+     * @return  array
      */
     function getVariables()
     {
@@ -34,10 +23,7 @@ class PMA_StorageEngine_ndbcluster extends PMA_StorageEngine
     }
 
     /**
-     * Returns the pattern to be used in the query for SQL variables
-     * related to NDBCLUSTER storage engine
-     *
-     * @return string  SQL query LIKE pattern
+     * @return  string  SQL query LIKE pattern
      */
     function getVariablesLikePattern()
     {
@@ -45,10 +31,10 @@ class PMA_StorageEngine_ndbcluster extends PMA_StorageEngine
     }
 
     /**
-     * Returns string with filename for the MySQL help page
-     * about this storage engine
+     * returns string with filename for the MySQL helppage
+     * about this storage engne
      *
-     * @return string  mysql helppage filename
+     * @return  string  mysql helppage filename
      */
     function getMysqlHelpPage()
     {

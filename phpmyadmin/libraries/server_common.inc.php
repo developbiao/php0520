@@ -1,11 +1,23 @@
 <?php
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
- * @package PhpMyAdmin
+ * @uses    PMA_generate_common_url()
+ * @uses    PMA_isSuperuser()
+ * @uses    PMA_DBI_select_db()
+ * @uses    PMA_DBI_fetch_result()
+ * @uses    PMA_DBI_QUERY_STORE
+ * @uses    $userlink
+ * @version $Id: server_common.inc.php 11986 2008-11-24 11:05:40Z nijel $
+ * @package phpMyAdmin
  */
 if (! defined('PHPMYADMIN')) {
     exit;
 }
+
+/**
+ * Gets some core libraries
+ */
+require_once './libraries/common.inc.php';
 
 /**
  * Handles some variables that may have been sent by the calling script
@@ -25,7 +37,12 @@ $url_query = PMA_generate_common_url($db);
 /**
  * Defines the urls to return to in case of error in a sql statement
  */
-$err_url = 'index.php' . $url_query;
+$err_url = 'main.php' . $url_query;
+
+/**
+ * Displays the headers
+ */
+require_once './libraries/header.inc.php';
 
 /**
  * @global boolean Checks for superuser privileges
@@ -33,24 +50,13 @@ $err_url = 'index.php' . $url_query;
 $is_superuser = PMA_isSuperuser();
 
 // now, select the mysql db
-if ($is_superuser && ! PMA_DRIZZLE) {
+if ($is_superuser) {
     PMA_DBI_select_db('mysql', $userlink);
 }
 
 /**
  * @global array binary log files
  */
-$binary_logs = PMA_DRIZZLE
-    ? null
-    : PMA_DBI_fetch_result(
-        'SHOW MASTER LOGS',
-        'Log_name',
-        null,
-        null,
-        PMA_DBI_QUERY_STORE
-    );
-
-PMA_Util::checkParameters(
-    array('is_superuser', 'url_query'), false
-);
+$binary_logs = PMA_DBI_fetch_result('SHOW MASTER LOGS', 'Log_name', null, null,
+    PMA_DBI_QUERY_STORE);
 ?>

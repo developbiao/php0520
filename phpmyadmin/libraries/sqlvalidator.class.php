@@ -7,15 +7,26 @@
  * http://www.orbis-terrarum.net/?l=people.robbat2
  *
  * All data is transported over HTTP-SOAP
- * And uses either the PEAR SOAP Module or PHP SOAP extension
+ * And uses the PEAR SOAP Module
  *
- * Install instructions for PEAR SOAP:
+ * Install instructions for PEAR SOAP
  * Make sure you have a really recent PHP with PEAR support
  * run this: "pear install Mail_Mime Net_DIME SOAP"
  *
+ * If you got this file from somewhere other than phpMyAdmin
+ * please be aware that the latest copy will always be in the
+ * phpMyAdmin subversion tree as
+ * $HeadURL: https://phpmyadmin.svn.sourceforge.net/svnroot/phpmyadmin/trunk/phpMyAdmin/libraries/sqlvalidator.class.php $
+ *
+ * This code that also used to depend on the PHP overload module, but that has been
+ * removed now.
+ *
  * @access   public
  *
- * @package PhpMyAdmin
+ * @author   Robin Johnson <robbat2@users.sourceforge.net>
+ *
+ * @version  $Id: sqlvalidator.class.php 11990 2008-11-24 11:12:52Z nijel $
+ * @package phpMyAdmin
  */
 if (! defined('PHPMYADMIN')) {
     exit;
@@ -24,29 +35,18 @@ if (! defined('PHPMYADMIN')) {
 /**
  * Load SOAP client.
  */
-if (class_exists('SOAPClient')) {
-    $GLOBALS['sqlvalidator_error'] = false;
-    $GLOBALS['sqlvalidator_soap'] = 'PHP';
-} else {
-    @include_once 'SOAP/Client.php';
-    if (class_exists('SOAP_Client')) {
-        $GLOBALS['sqlvalidator_soap'] = 'PEAR';
-        $GLOBALS['sqlvalidator_error'] = false;
-    } else {
-        $GLOBALS['sqlvalidator_soap'] = 'NONE';
-        $GLOBALS['sqlvalidator_error'] = true;
-        PMA_warnMissingExtension('soap');
-    }
-}
+@include_once 'SOAP/Client.php';
 
-if (!$GLOBALS['sqlvalidator_error']) {
+if (!function_exists('class_exists') || !class_exists('SOAP_Client')) {
+    $GLOBALS['sqlvalidator_error'] = TRUE;
+} else {
     // Ok, we have SOAP Support, so let's use it!
 
-    /**
-     * @package PhpMyAdmin
-     */
-    class PMA_SQLValidator
-    {
+/**
+ * @package phpMyAdmin
+ */
+    class PMA_SQLValidator {
+
         var $url;
         var $service_name;
         var $wsdl;
@@ -73,7 +73,7 @@ if (!$GLOBALS['sqlvalidator_error']) {
         /**
          * Service opening
          *
-         * @param string $url URL of Mimer SQL Validator WSDL file
+         * @param  string  URL of Mimer SQL Validator WSDL file
          *
          * @return object  Object to use
          *
@@ -81,11 +81,7 @@ if (!$GLOBALS['sqlvalidator_error']) {
          */
         function _openService($url)
         {
-            if ($GLOBALS['sqlvalidator_soap'] == 'PHP') {
-                $obj = new SOAPClient($url);
-            } else {
-                $obj = new SOAP_Client($url, true);
-            }
+            $obj = new SOAP_Client($url, TRUE);
             return $obj;
         } // end of the "openService()" function
 
@@ -93,43 +89,36 @@ if (!$GLOBALS['sqlvalidator_error']) {
         /**
          * Service initializer to connect to server
          *
-         * @param object  $obj                           Service object
-         * @param string  $username                      Username
-         * @param string  $password                      Password
-         * @param string  $calling_program               Name of calling program
-         * @param string  $calling_program_version       Version of calling program
-         * @param string  $target_dbms                   Target DBMS
-         * @param string  $target_dbms_version           Version of target DBMS
-         * @param string  $connection_technology         Connection Technology
-         * @param string  $connection_technology_version Con. Technology version
-         * @param integer $interactive                   boolean 1/0 to specify if
-         *                                               we are an interactive system
+         * @param  object   Service object
+         * @param  string   Username
+         * @param  string   Password
+         * @param  string   Name of calling program
+         * @param  string   Version of calling program
+         * @param  string   Target DBMS
+         * @param  string   Version of target DBMS
+         * @param  string   Connection Technology
+         * @param  string   version of Connection Technology
+         * @param  integer  boolean of 1/0 to specify if we are an interactive system
          *
          * @return object   stdClass return object with data
          *
          * @access private
          */
-        function _openSession($obj, $username, $password, $calling_program,
-            $calling_program_version, $target_dbms, $target_dbms_version,
-            $connection_technology, $connection_technology_version, $interactive
-        ) {
-            $use_array = array(
-                "a_userName" => $username,
-                "a_password" => $password,
-                "a_callingProgram" => $calling_program,
-                "a_callingProgramVersion" => $calling_program_version,
-                "a_targetDbms" => $target_dbms,
-                "a_targetDbmsVersion" => $target_dbms_version,
-                "a_connectionTechnology" => $connection_technology,
-                "a_connectionTechnologyVersion" => $connection_technology_version,
-                "a_interactive" => $interactive,
-            );
+        function _openSession($obj, $username, $password,
+                                      $calling_program, $calling_program_version,
+                                      $target_dbms, $target_dbms_version,
+                                      $connection_technology, $connection_technology_version,
+                                      $interactive)
+        {
+    $use_array = array("a_userName" => $username, "a_password" => $password, "a_callingProgram" => $calling_program, "a_callingProgramVersion" => $calling_program_version, "a_targetDbms" => $target_dbms, "a_targetDbmsVersion" => $target_dbms_version, "a_connectionTechnology" => $connection_technology, "a_connectionTechnologyVersion" => $connection_technology_version, "a_interactive" => $interactive);
+            $ret = $obj->call("openSession", $use_array);
 
-            if ($GLOBALS['sqlvalidator_soap'] == 'PHP') {
-                $ret = $obj->__soapCall("openSession", $use_array);
-            } else {
-                $ret = $obj->call("openSession", $use_array);
-            }
+           // This is the old version that needed the overload extension
+           /* $ret = $obj->openSession($username, $password,
+                                     $calling_program, $calling_program_version,
+                                     $target_dbms, $target_dbms_version,
+                                     $connection_technology, $connection_technology_version,
+                                     $interactive); */
 
             return $ret;
         } // end of the "_openSession()" function
@@ -138,10 +127,10 @@ if (!$GLOBALS['sqlvalidator_error']) {
         /**
          * Validator sytem call
          *
-         * @param object $obj     Service object
-         * @param object $session Session object
-         * @param string $sql     SQL Query to validate
-         * @param string $method  Data return type
+         * @param  object  Service object
+         * @param  object  Session object
+         * @param  string  SQL Query to validate
+         * @param  string  Data return type
          *
          * @return object  stClass return with data
          *
@@ -149,19 +138,11 @@ if (!$GLOBALS['sqlvalidator_error']) {
          */
         function _validateSQL($obj, $session, $sql, $method)
         {
-            $use_array = array(
-                "a_sessionId" => $session->sessionId,
-                "a_sessionKey" => $session->sessionKey,
-                "a_SQL" => $sql,
-                "a_resultType" => $this->output_type,
-            );
+    $use_array = array("a_sessionId" => $session->sessionId, "a_sessionKey" => $session->sessionKey, "a_SQL" => $sql, "a_resultType" => $this->output_type);
+            $res = $obj->call("validateSQL", $use_array);
 
-            if ($GLOBALS['sqlvalidator_soap'] == 'PHP') {
-                $res = $obj->__soapCall("validateSQL", $use_array);
-            } else {
-                $res = $obj->call("validateSQL", $use_array);
-            }
-
+           // This is the old version that needed the overload extension
+           // $res = $obj->validateSQL($session->sessionId, $session->sessionKey, $sql, $this->output_type);
             return $res;
         } // end of the "validateSQL()" function
 
@@ -169,7 +150,7 @@ if (!$GLOBALS['sqlvalidator_error']) {
         /**
          * Validator sytem call
          *
-         * @param string $sql SQL Query to validate
+         * @param  string  SQL Query to validate
          *
          * @return object  stdClass return with data
          *
@@ -179,9 +160,8 @@ if (!$GLOBALS['sqlvalidator_error']) {
          */
         function _validate($sql)
         {
-            $ret = $this->_validateSQL(
-                $this->service_link, $this->session_data, $sql, $this->output_type
-            );
+            $ret = $this->_validateSQL($this->service_link, $this->session_data,
+                                               $sql, $this->output_type);
             return $ret;
         } // end of the "validate()" function
 
@@ -206,7 +186,7 @@ if (!$GLOBALS['sqlvalidator_error']) {
             $this->username                      = 'anonymous';
             $this->password                      = '';
             $this->calling_program               = 'PHP_SQLValidator';
-            $this->calling_program_version       = PMA_VERSION;
+            $this->calling_program_version       = '$Revision: 11990 $';
             $this->target_dbms                   = 'N/A';
             $this->target_dbms_version           = 'N/A';
             $this->connection_technology         = 'PHP';
@@ -221,10 +201,9 @@ if (!$GLOBALS['sqlvalidator_error']) {
         /**
          * Sets credentials
          *
-         * @param string $username the username
-         * @param string $password the password
+         * @param  string  the username
+         * @param  string  the password
          *
-         * @return void
          * @access public
          */
         function setCredentials($username, $password)
@@ -237,10 +216,9 @@ if (!$GLOBALS['sqlvalidator_error']) {
         /**
          * Sets the calling program
          *
-         * @param string $calling_program         the calling program name
-         * @param string $calling_program_version the calling program revision
+         * @param  string  the calling program name
+         * @param  string  the calling program revision
          *
-         * @return void
          * @access public
          */
         function setCallingProgram($calling_program, $calling_program_version)
@@ -253,10 +231,9 @@ if (!$GLOBALS['sqlvalidator_error']) {
         /**
          * Appends the calling program
          *
-         * @param string $calling_program         the calling program name
-         * @param string $calling_program_version the calling program revision
+         * @param  string  the calling program name
+         * @param  string  the calling program revision
          *
-         * @return void
          * @access public
          */
         function appendCallingProgram($calling_program, $calling_program_version)
@@ -269,10 +246,9 @@ if (!$GLOBALS['sqlvalidator_error']) {
         /**
          * Sets the target DBMS
          *
-         * @param string $target_dbms         the target DBMS name
-         * @param string $target_dbms_version the target DBMS revision
+         * @param  string  the target DBMS name
+         * @param  string  the target DBMS revision
          *
-         * @return void
          * @access public
          */
         function setTargetDbms($target_dbms, $target_dbms_version)
@@ -285,10 +261,9 @@ if (!$GLOBALS['sqlvalidator_error']) {
         /**
          * Appends the target DBMS
          *
-         * @param string $target_dbms         the target DBMS name
-         * @param string $target_dbms_version the target DBMS revision
+         * @param  string  the target DBMS name
+         * @param  string  the target DBMS revision
          *
-         * @return void
          * @access public
          */
         function appendTargetDbms($target_dbms, $target_dbms_version)
@@ -301,15 +276,13 @@ if (!$GLOBALS['sqlvalidator_error']) {
         /**
          * Sets the connection technology used
          *
-         * @param string $connection_technology         the con. technology name
-         * @param string $connection_technology_version the con. technology revision
+         * @param  string  the connection technology name
+         * @param  string  the connection technology revision
          *
-         * @return void
          * @access public
          */
-        function setConnectionTechnology(
-            $connection_technology, $connection_technology_version
-        ) {
+        function setConnectionTechnology($connection_technology, $connection_technology_version)
+        {
             $this->connection_technology         = $connection_technology;
             $this->connection_technology_version = $connection_technology_version;
         } // end of the "setConnectionTechnology()" function
@@ -318,15 +291,13 @@ if (!$GLOBALS['sqlvalidator_error']) {
         /**
          * Appends the connection technology used
          *
-         * @param string $connection_technology         the con. technology name
-         * @param string $connection_technology_version the con. technology revision
+         * @param  string  the connection technology name
+         * @param  string  the connection technology revision
          *
-         * @return void
          * @access public
          */
-        function appendConnectionTechnology(
-            $connection_technology, $connection_technology_version
-        ) {
+        function appendConnectionTechnology($connection_technology, $connection_technology_version)
+        {
             $this->connection_technology         .= ' - ' . $connection_technology;
             $this->connection_technology_version .= ' - ' . $connection_technology_version;
         } // end of the "appendConnectionTechnology()" function
@@ -335,9 +306,8 @@ if (!$GLOBALS['sqlvalidator_error']) {
         /**
          * Sets whether interactive mode should be used or not
          *
-         * @param integer $interactive whether interactive mode should be used or not
+         * @param  integer  whether interactive mode should be used or not
          *
-         * @return void
          * @access public
          */
         function setInteractive($interactive)
@@ -349,9 +319,8 @@ if (!$GLOBALS['sqlvalidator_error']) {
         /**
          * Sets the output type to use
          *
-         * @param string $output_type the output type to use
+         * @param  string  the output type to use
          *
-         * @return void
          * @access public
          */
         function setOutputType($output_type)
@@ -363,37 +332,31 @@ if (!$GLOBALS['sqlvalidator_error']) {
         /**
          * Starts service
          *
-         * @return void
          * @access public
          */
         function startService()
         {
-            $this->service_link = $this->_openService(
-                $this->url . '/' . $this->service_name . $this->wsdl
-            );
+
+            $this->service_link = $this->_openService($this->url . '/' . $this->service_name . $this->wsdl);
+
         } // end of the "startService()" function
 
 
         /**
          * Starts session
          *
-         * @return void
          * @access public
          */
         function startSession()
         {
-            $this->session_data = $this->_openSession(
-                $this->service_link, $this->username, $this->password,
-                $this->calling_program, $this->calling_program_version,
-                $this->target_dbms, $this->target_dbms_version,
-                $this->connection_technology, $this->connection_technology_version,
-                true // FIXME: Are we to tell them that we are interactive?
-            );
+            $this->session_data = $this->_openSession($this->service_link, $this->username, $this->password,
+                                                              $this->calling_program, $this->calling_program_version,
+                                                              $this->target_dbms, $this->target_dbms_version,
+                                                              $this->connection_technology, $this->connection_technology_version,
+                                                              $this->interactive);
 
-            if (isset($this->session_data)
-                && ($this->session_data != null)
-                && ($this->session_data->target != $this->url)
-            ) {
+            if (isset($this->session_data) && ($this->session_data != null)
+                && ($this->session_data->target != $this->url)) {
                 // Reopens the service on the new URL that was provided
                 $url = $this->session_data->target;
                 $this->startService();
@@ -404,7 +367,6 @@ if (!$GLOBALS['sqlvalidator_error']) {
         /**
          * Do start service and session
          *
-         * @return void
          * @access public
          */
         function start()
@@ -417,7 +379,7 @@ if (!$GLOBALS['sqlvalidator_error']) {
         /**
          * Call to determine just if a query is valid or not.
          *
-         * @param string $sql SQL statement to validate
+         * @param  string SQL statement to validate
          *
          * @return string Validator string from Mimer
          *
@@ -433,7 +395,7 @@ if (!$GLOBALS['sqlvalidator_error']) {
         /**
          * Call for complete validator response
          *
-         * @param string $sql SQL statement to validate
+         * @param  string SQL statement to validate
          *
          * @return string Validator string from Mimer
          *
@@ -449,7 +411,7 @@ if (!$GLOBALS['sqlvalidator_error']) {
 
     //add an extra check to ensure that the class was defined without errors
     if (!class_exists('PMA_SQLValidator')) {
-        $GLOBALS['sqlvalidator_error'] = true;
+        $GLOBALS['sqlvalidator_error'] = TRUE;
     }
 
 } // end else

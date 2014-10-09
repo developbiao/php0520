@@ -7,70 +7,38 @@
  * For changing this file you should know what you are doing. For this reason
  * options here are not part of normal configuration.
  *
- * @package PhpMyAdmin
+ * @version $Id: vendor_config.php 12081 2008-12-05 00:25:59Z lem9 $
+ * @package phpMyAdmin
  */
-if (! defined('PHPMYADMIN')) {
-    exit;
-}
 
 /**
  * Path to changelog file, can be gzip compressed. Useful when you want to
  * have documentation somewhere else, eg. /usr/share/doc.
  */
-define('CHANGELOG_FILE', '/usr/share/doc/phpmyadmin/changelog.gz');
+define('CHANGELOG_FILE', './ChangeLog');
 
 /**
  * Path to license file. Useful when you want to have documentation somewhere
  * else, eg. /usr/share/doc.
  */
-define('LICENSE_FILE', '/usr/share/doc/phpmyadmin/copyright');
+define('LICENSE_FILE', './LICENSE');
 
 /**
  * Path to config file generated using setup script.
  */
-define('SETUP_CONFIG_FILE', '/var/lib/phpmyadmin/config.inc.php');
+define('SETUP_CONFIG_FILE', './config/config.inc.php');
 
 /**
  * Whether setup requires writable directory where config
  * file will be generated.
  */
-define('SETUP_DIR_WRITABLE', false);
+define('SETUP_DIR_WRITABLE', true);
 
 /**
- * Directory where configuration files are stored.
- * It is not used directly in code, just a convenient
- * define used further in this file.
+ * Whether to skip mtime check on config file and load it on every request.
+ * This has slight performance drawback, but it is the only way to handle
+ * inclusions of other php scripts from config.
  */
-define('CONFIG_DIR', '/etc/phpmyadmin/');
+define('SKIP_MTIME_CONFIG_CHECK', false);
 
-/**
- * Filename of a configuration file.
- */
-define('CONFIG_FILE', CONFIG_DIR . 'config.inc.php');
-
-/**
- * Filename of custom header file.
- */
-define('CUSTOM_HEADER_FILE', CONFIG_DIR . 'config.header.inc.php');
-
-/**
- * Filename of custom footer file.
- */
-define('CUSTOM_FOOTER_FILE', CONFIG_DIR . 'config.footer.inc.php');
-
-/**
- * Default value for check for version upgrades.
- */
-define('VERSION_CHECK_DEFAULT', false);
-
-/**
- * Path to gettext.inc file. Useful when you want php-gettext somewhere else,
- * eg. /usr/share/php/gettext/gettext.inc.
- */
-define('GETTEXT_INC', './libraries/php-gettext/gettext.inc');
-/**
- * Path to tcpdf.php file. Useful when you want to use system tcpdf,
- * eg. /usr/share/php/tcpdf/tcpdf.php.
- */
-define('TCPDF_INC', './libraries/tcpdf/tcpdf.php');
 ?>

@@ -2,40 +2,18 @@
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  *
- * @package PhpMyAdmin
+ * @version $Id: server_databases.php 12242 2009-02-20 09:22:20Z lem9 $
+ * @package phpMyAdmin
  */
 
 /**
  * Does the common work
  */
-require_once 'libraries/common.inc.php';
-$response = PMA_Response::getInstance();
-$header   = $response->getHeader();
-$scripts  = $header->getScripts();
-$scripts->addFile('server_databases.js');
+require_once './libraries/common.inc.php';
 
-require 'libraries/server_common.inc.php';
-if (! PMA_DRIZZLE) {
-    include_once 'libraries/replication.inc.php';
-} else {
-    $replication_types = array();
-    $replication_info = null;
-}
-require 'libraries/build_html_for_db.lib.php';
 
-/**
- * Sets globals from $_POST
- */
-$post_params = array(
-    'mult_btn',
-    'query_type',
-    'selected'
-);
-foreach ($post_params as $one_post_param) {
-    if (isset($_POST[$one_post_param])) {
-        $GLOBALS[$one_post_param] = $_POST[$one_post_param];
-    }
-}
+$GLOBALS['js_include'][] = 'functions.js';
+require './libraries/server_common.inc.php';
 
 /**
  * avoids 'undefined index' errors
@@ -43,26 +21,11 @@ foreach ($post_params as $one_post_param) {
 if (empty($_REQUEST['sort_by'])) {
     $sort_by = 'SCHEMA_NAME';
 } else {
-    $sort_by_whitelist = array(
-        'SCHEMA_NAME',
-        'DEFAULT_COLLATION_NAME',
-        'SCHEMA_TABLES',
-        'SCHEMA_TABLE_ROWS',
-        'SCHEMA_DATA_LENGTH',
-        'SCHEMA_INDEX_LENGTH',
-        'SCHEMA_LENGTH',
-        'SCHEMA_DATA_FREE'
-    );
-    if (in_array($_REQUEST['sort_by'], $sort_by_whitelist)) {
-        $sort_by = $_REQUEST['sort_by'];
-    } else {
-        $sort_by = 'SCHEMA_NAME';
-    }
+    $sort_by = PMA_sanitize($_REQUEST['sort_by']);
 }
 
 if (isset($_REQUEST['sort_order'])
-    && strtolower($_REQUEST['sort_order']) == 'desc'
-) {
+ && strtolower($_REQUEST['sort_order']) == 'desc') {
     $sort_order = 'desc';
 } else {
     $sort_order = 'asc';
@@ -83,78 +46,53 @@ if (isset($_REQUEST['drop_selected_dbs_x'])) {
 }
 
 if ((isset($_REQUEST['drop_selected_dbs']) || isset($_REQUEST['query_type']))
-    && ($is_superuser || $cfg['AllowUserDropDatabase'])
-) {
+  && ($is_superuser || $cfg['AllowUserDropDatabase'])) {
     if (! isset($_REQUEST['selected_dbs']) && ! isset($_REQUEST['query_type'])) {
-        $message = PMA_Message::error(__('No databases selected.'));
+        $message = PMA_Message::error('strNoDatabasesSelected');
     } else {
         $action = 'server_databases.php';
-        $submit_mult = 'drop_db';
+        $submit_mult = 'drop_db' ;
         $err_url = 'server_databases.php?' . PMA_generate_common_url();
-        if (isset($_REQUEST['selected_dbs'])
-            && !isset($_REQUEST['is_js_confirmed'])
-        ) {
+        if (isset($_REQUEST['selected_dbs'])) {
             $selected_db = $_REQUEST['selected_dbs'];
         }
-        if (isset($_REQUEST['is_js_confirmed'])) {
-            $_REQUEST = array(
-                'query_type' => $submit_mult,
-                'selected' => $_REQUEST['selected_dbs'],
-                'mult_btn' => __('Yes'),
-                'db' => $GLOBALS['db'],
-                'table' => $GLOBALS['table']);
-        }
-        include 'libraries/mult_submits.inc.php';
-        unset($action, $submit_mult, $err_url, $selected_db, $GLOBALS['db']);
+        require './libraries/mult_submits.inc.php';
+        unset($action, $submit_mult, $err_url, $selected_db);
         if (empty($message)) {
-            if ($mult_btn == __('Yes')) {
-                $number_of_databases = count($selected);
+            $message = PMA_Message::success('strDatabasesDropped');
+            if ($mult_btn == $strYes) {
+                $message->addParam(count($selected));
             } else {
-                $number_of_databases = 0;
+                $message->addParam(0);
             }
-            $message = PMA_Message::success(
-                _ngettext(
-                    '%1$d database has been dropped successfully.',
-                    '%1$d databases have been dropped successfully.',
-                    $number_of_databases
-                )
-            );
-            $message->addParam($number_of_databases);
         }
-    }
-    if ($GLOBALS['is_ajax_request'] && $message instanceof PMA_Message) {
-        $response = PMA_Response::getInstance();
-        $response->isSuccess($message->isSuccess());
-        $response->addJSON('message', $message);
-        exit;
+
     }
 }
+
+/**
+ * Displays the links
+ */
+require './libraries/server_links.inc.php';
+
 
 /**
  * Displays the sub-page heading
  */
 echo '<h2>' . "\n"
-   . PMA_Util::getImage('s_db.png')
-   . ($dbstats ? __('Databases statistics') : __('Databases')) . "\n"
+   . ($GLOBALS['cfg']['MainPageIconic']
+      ? '<img class="icon" src="' . $pmaThemeImage . 's_db.png" width="16"'
+        .' height="16" alt="" />'
+      : '')
+   . ($dbstats ? $strDatabasesStats : $strDatabases) . "\n"
    .'</h2>' . "\n";
-
-/**
- * Create database.
- */
-if ($cfg['ShowCreateDb']) {
-    echo '<ul><li id="li_create_database" class="no_bullets">' . "\n";
-    include 'libraries/display_create_database.lib.php';
-    echo '    </li>' . "\n";
-    echo '</ul>' . "\n";
-}
 
 /**
  * Gets the databases list
  */
 if ($server > 0) {
-    $databases = PMA_DBI_get_databases_full(
-        null, $dbstats, null, $sort_by, $sort_order, $pos, true
-    );
+    $databases = PMA_DBI_get_databases_full(null, $dbstats, null, $sort_by,
+        $sort_order, $pos, true);
     $databases_count = count($GLOBALS['pma']->databases);
 } else {
     $databases_count = 0;
@@ -165,11 +103,45 @@ if ($server > 0) {
  * Displays the page
  */
 if ($databases_count > 0) {
-    echo '<div id="tableslistcontainer">';
     reset($databases);
     $first_database = current($databases);
     // table col order
-    $column_order = PMA_getColumnOrder();
+    $column_order['DEFAULT_COLLATION_NAME'] = array(
+            'disp_name' => $strCollation,
+            'description_function' => 'PMA_getCollationDescr',
+            'format'    => 'string',
+            'footer'    => PMA_getServerCollation(),
+        );
+    $column_order['SCHEMA_TABLES'] = array(
+        'disp_name' => $strNumTables,
+        'format'    => 'number',
+        'footer'    => 0,
+    );
+    $column_order['SCHEMA_TABLE_ROWS'] = array(
+        'disp_name' => $strRows,
+        'format'    => 'number',
+        'footer'    => 0,
+    );
+    $column_order['SCHEMA_DATA_LENGTH'] = array(
+        'disp_name' => $strData,
+        'format'    => 'byte',
+        'footer'    => 0,
+    );
+    $column_order['SCHEMA_INDEX_LENGTH'] = array(
+        'disp_name' => $strIndexes,
+        'format'    => 'byte',
+        'footer'    => 0,
+    );
+    $column_order['SCHEMA_LENGTH'] = array(
+        'disp_name' => $strTotalUC,
+        'format'    => 'byte',
+        'footer'    => 0,
+    );
+    $column_order['SCHEMA_DATA_FREE'] = array(
+        'disp_name' => $strOverhead,
+        'format'    => 'byte',
+        'footer'    => 0,
+    );
 
     $_url_params = array(
         'pos' => $pos,
@@ -178,16 +150,12 @@ if ($databases_count > 0) {
         'sort_order' => $sort_order,
     );
 
-    echo PMA_Util::getListNavigator(
-        $databases_count, $pos, $_url_params, 'server_databases.php',
-        'frame_content', $GLOBALS['cfg']['MaxDbList']
-    );
+    PMA_listNavigator($databases_count, $pos, $_url_params, 'server_databases.php', 'frame_content', $GLOBALS['cfg']['MaxDbList']);
 
     $_url_params['pos'] = $pos;
 
-    echo '<form class="ajax" action="server_databases.php" ';
-    echo 'method="post" name="dbStatsForm" id="dbStatsForm">' . "\n";
-    echo PMA_generate_common_hidden_inputs($_url_params);
+    echo '<form action="./server_databases.php" method="post" name="dbStatsForm" id="dbStatsForm">' . "\n"
+       . PMA_generate_common_hidden_inputs($_url_params);
 
     $_url_params['sort_by'] = 'SCHEMA_NAME';
     $_url_params['sort_order'] = ($sort_by == 'SCHEMA_NAME' && $sort_order == 'asc') ? 'desc' : 'asc';
@@ -196,9 +164,9 @@ if ($databases_count > 0) {
        . '<thead>' . "\n"
        . '<tr>' . "\n"
        . ($is_superuser || $cfg['AllowUserDropDatabase'] ? '        <th></th>' . "\n" : '')
-       . '    <th><a href="server_databases.php' . PMA_generate_common_url($_url_params) . '">' . "\n"
-       . '            ' . __('Database') . "\n"
-       . ($sort_by == 'SCHEMA_NAME' ? '                ' . PMA_Util::getImage('s_' . $sort_order . '.png', ($sort_order == 'asc' ? __('Ascending') : __('Descending'))) . "\n" : '')
+       . '    <th><a href="./server_databases.php' . PMA_generate_common_url($_url_params) . '">' . "\n"
+       . '            ' . $strDatabase . "\n"
+       . ($sort_by == 'SCHEMA_NAME' ? '                <img class="icon" src="' . $pmaThemeImage . 's_' . $sort_order . '.png" width="11" height="9"  alt="' . ($sort_order == 'asc' ? $strAscending : $strDescending) . '" />' . "\n" : '')
        . '        </a></th>' . "\n";
     $table_columns = 3;
     foreach ($column_order as $stat_name => $stat) {
@@ -213,28 +181,15 @@ if ($databases_count > 0) {
             $_url_params['sort_by'] = $stat_name;
             $_url_params['sort_order'] = ($sort_by == $stat_name && $sort_order == 'desc') ? 'asc' : 'desc';
             echo '    <th' . $colspan . '>'
-                . '<a href="server_databases.php' . PMA_generate_common_url($_url_params) . '">' . "\n"
-                . '            ' . $stat['disp_name'] . "\n"
-                . ($sort_by == $stat_name ? '            ' . PMA_Util::getImage('s_' . $sort_order . '.png', ($sort_order == 'asc' ? __('Ascending') : __('Descending'))) . "\n" : '')
-                . '        </a></th>' . "\n";
+                .'<a href="./server_databases.php' . PMA_generate_common_url($_url_params) . '">' . "\n"
+                .'            ' . $stat['disp_name'] . "\n"
+                .($sort_by == $stat_name ? '            <img class="icon" src="' . $pmaThemeImage . 's_' . $sort_order . '.png" width="11" height="9"  alt="' . ($sort_order == 'asc' ? $strAscending : $strDescending) . '" />' . "\n" : '')
+                .'        </a></th>' . "\n";
         }
     }
-
-    foreach ($replication_types as $type) {
-        if ($type=="master") {
-            $name = __('Master replication');
-        } elseif ($type == "slave") {
-            $name = __('Slave replication');
-        }
-        if (${"server_{$type}_status"}) {
-            echo '    <th>'. $name .'</th>' . "\n";
-        }
-    }
-
-    if ($is_superuser && ! PMA_DRIZZLE) {
-        echo '    <th>' 
-            . ($cfg['ActionLinksMode'] == 'icons' ? '' : __('Action')) . "\n"
-            . '    </th>' . "\n";
+    if ($is_superuser) {
+        echo '    <th>' . ($cfg['PropertiesIconic'] ? '' : $strAction) . "\n"
+           . '    </th>' . "\n";
     }
     echo '</tr>' . "\n"
        . '</thead>' . "\n"
@@ -242,39 +197,86 @@ if ($databases_count > 0) {
 
     $odd_row = true;
     foreach ($databases as $current) {
-        $tr_class = $odd_row ? 'odd' : 'even';
-        if (PMA_is_system_schema($current['SCHEMA_NAME'], true)) {
-            $tr_class .= ' noclick';
-        }
-        echo '<tr class="' . $tr_class . '">' . "\n";
+        echo '<tr class="' . ($odd_row ? 'odd' : 'even') . '">' . "\n";
         $odd_row = ! $odd_row;
 
-        list($column_order, $generated_html) = PMA_buildHtmlForDb(
-            $current,
-            $is_superuser,
-            $url_query,
-            $column_order,
-            $replication_types,
-            $replication_info
-        );
+        if ($is_superuser || $cfg['AllowUserDropDatabase']) {
+            echo '    <td class="tool">' . "\n";
+            if ($current['SCHEMA_NAME'] != 'mysql'
+             && $current['SCHEMA_NAME'] != 'information_schema') {
+                echo '        <input type="checkbox" name="selected_dbs[]" title="' . htmlspecialchars($current['SCHEMA_NAME']) . '" value="' . htmlspecialchars($current['SCHEMA_NAME']) . '" ' . (empty($checkall) ? '' : 'checked="checked" ') . '/>' . "\n";
+            } else {
+                echo '        <input type="checkbox" name="selected_dbs[]" title="' . htmlspecialchars($current['SCHEMA_NAME']) . '" value="' . htmlspecialchars($current['SCHEMA_NAME']) . '" disabled="disabled"/>' . "\n";
+            }
+            echo '    </td>' . "\n";
+        }
+        echo '    <td class="name">' . "\n"
+           . '        <a onclick="'
+           . 'if (window.parent.openDb &amp;&amp; window.parent.openDb(\'' . PMA_jsFormat($current['SCHEMA_NAME'], false) . '\')) return false;'
+           . '" href="index.php?' . $url_query . '&amp;db='
+           . urlencode($current['SCHEMA_NAME']) . '" title="'
+           . sprintf($strJumpToDB, htmlspecialchars($current['SCHEMA_NAME']))
+           . '" target="_parent">' . "\n"
+           . '            ' . htmlspecialchars($current['SCHEMA_NAME']) . "\n"
+           . '        </a>' . "\n"
+           . '    </td>' . "\n";
 
-        echo $generated_html;
+        foreach ($column_order as $stat_name => $stat) {
+            if (array_key_exists($stat_name, $current)) {
+                if (is_numeric($stat['footer'])) {
+                    $column_order[$stat_name]['footer'] += $current[$stat_name];
+                }
+                if ($stat['format'] === 'byte') {
+                    list($value, $unit) = PMA_formatByteDown($current[$stat_name], 3, 1);
+                } elseif ($stat['format'] === 'number') {
+                    $value = PMA_formatNumber($current[$stat_name], 0);
+                } else {
+                    $value = htmlentities($current[$stat_name], 0);
+                }
+                echo '    <td class="value">';
+                if (isset($stat['description_function'])) {
+                    echo '<dfn title="' . $stat['description_function']($current[$stat_name]) . '">';
+                }
+                echo $value;
+                if (isset($stat['description_function'])) {
+                    echo '</dfn>';
+                }
+                echo '</td>' . "\n";
+                if ($stat['format'] === 'byte') {
+                    echo '    <td class="unit">' . $unit . '</td>' . "\n";
+                }
+            }
+        }
 
+        if ($is_superuser) {
+            echo '    <td class="tool">' . "\n"
+               . '        <a onclick="'
+               . 'if (window.parent.setDb) window.parent.setDb(\'' . PMA_jsFormat($current['SCHEMA_NAME']) . '\');'
+               . '" href="./server_privileges.php?' . $url_query
+               . '&amp;checkprivs=' . urlencode($current['SCHEMA_NAME'])
+               . '" title="' . sprintf($strCheckPrivsLong, htmlspecialchars($current['SCHEMA_NAME']))
+               . '">'. "\n"
+               . '            '
+               . ($cfg['PropertiesIconic']
+                 ? '<img class="icon" src="' . $pmaThemeImage . 's_rights.png" width="16" height="16" alt=" ' . $strCheckPrivs . '" /> '
+                 : $strCheckPrivs) . "\n"
+               . '        </a></td>' . "\n";
+        }
         echo '</tr>' . "\n";
     } // end foreach ($databases as $key => $current)
     unset($current, $odd_row);
 
-    echo '</tbody><tfoot><tr>' . "\n";
+    echo '<tr>' . "\n";
     if ($is_superuser || $cfg['AllowUserDropDatabase']) {
         echo '    <th></th>' . "\n";
     }
-    echo '    <th>' . __('Total') . ': <span id="databases_count">' . $databases_count . '</span></th>' . "\n";
+    echo '    <th>' . $strTotalUC . ': ' . $databases_count . '</th>' . "\n";
     foreach ($column_order as $stat_name => $stat) {
         if (array_key_exists($stat_name, $first_database)) {
             if ($stat['format'] === 'byte') {
-                list($value, $unit) = PMA_Util::formatByteDown($stat['footer'], 3, 1);
+                list($value, $unit) = PMA_formatByteDown($stat['footer'], 3, 1);
             } elseif ($stat['format'] === 'number') {
-                $value = PMA_Util::formatNumber($stat['footer'], 0);
+                $value = PMA_formatNumber($stat['footer'], 0);
             } else {
                 $value = htmlentities($stat['footer'], 0);
             }
@@ -292,58 +294,58 @@ if ($databases_count > 0) {
             }
         }
     }
-
-    foreach ($replication_types as $type) {
-        if (${"server_{$type}_status"}) {
-            echo '    <th></th>' . "\n";
-        }
-    }
-
     if ($is_superuser) {
         echo '    <th></th>' . "\n";
     }
     echo '</tr>' . "\n";
-    echo '</tfoot>' . "\n"
+    echo '</tbody>' . "\n"
         .'</table>' . "\n";
     unset($column_order, $stat_name, $stat, $databases, $table_columns);
 
     if ($is_superuser || $cfg['AllowUserDropDatabase']) {
-        $common_url_query = PMA_generate_common_url(
-            array(
-                'sort_by' => $sort_by,
-                'sort_order' => $sort_order,
-                'dbstats' => $dbstats
-            )
-        );
-        echo '<img class="selectallarrow" src="' . $pmaThemeImage . 'arrow_' . $text_dir . '.png"'
-           . ' width="38" height="22" alt="' . __('With selected:') . '" />' . "\n"
-           . '<input type="checkbox" id="checkall" title="' . __('Check All') . '" /> '
-           . '<label for="checkall">' . __('Check All') . '</label> '
-           . '<i style="margin-left: 2em">' . __('With selected:') . '</i>' . "\n";
-        echo PMA_Util::getButtonOrImage(
-            '',
-            'mult_submit' . ' ajax',
-            'drop_selected_dbs',
-            __('Drop'), 'b_deltbl.png'
-        );
+        $common_url_query = PMA_generate_common_url() . '&amp;sort_by=' . $sort_by . '&amp;sort_order=' . $sort_order . '&amp;dbstats=' . $dbstats;
+        echo '<img class="selectallarrow" src="' . $pmaThemeImage . 'arrow_' . $text_dir . '.png" width="38" height="22" alt="' . $strWithChecked . '" />' . "\n"
+           . '<a href="./server_databases.php?' . $common_url_query . '&amp;checkall=1" onclick="if (markAllRows(\'tabledatabases\')) return false;">' . "\n"
+           . '    ' . $strCheckAll . '</a> / ' . "\n"
+           . '<a href="./server_databases.php?' . $common_url_query . '" onclick="if (unMarkAllRows(\'tabledatabases\')) return false;">' . "\n"
+           . '    ' . $strUncheckAll . '</a>' . "\n"
+           . '<i>' . $strWithChecked . '</i>' . "\n";
+        PMA_buttonOrImage('drop_selected_dbs', 'mult_submit', 'drop_selected_dbs', $strDrop, 'b_deltbl.png');
     }
 
+    echo '<ul><li id="li_switch_dbstats"><strong>' . "\n";
     if (empty($dbstats)) {
-        echo '<ul><li id="li_switch_dbstats"><strong>' . "\n";
-            echo '<a href="server_databases.php?' . $url_query . '&amp;dbstats=1"'
-                . ' title="' . __('Enable Statistics') . '">' . "\n"
-                . '            ' . __('Enable Statistics');
-        echo '</a></strong><br />' . "\n";
-        PMA_Message::notice(
-            __('Note: Enabling the database statistics here might cause heavy traffic between the web server and the MySQL server.')
-        )->display();
-        echo '</li>' . "\n" . '</ul>' . "\n";
+        echo '        <a href="./server_databases.php?' . $url_query . '&amp;dbstats=1"'
+            .' title="' . $strDatabasesStatsEnable . '">' . "\n"
+            .'            ' . $strDatabasesStatsEnable;
+    } else {
+        echo '        <a href="./server_databases.php?' . $url_query . '"'
+            .' title="' . $strDatabasesStatsDisable . '">' . "\n"
+            .'            ' . $strDatabasesStatsDisable;
     }
+    echo '</a></strong><br />' . "\n";
+    PMA_Message::warning('strDatabasesStatsHeavyTraffic')->display();
+    echo '</li>' . "\n"
+        .'</ul>' . "\n";
     echo '</form>';
-    echo '</div>';
 } else {
-    echo __('No databases');
+    echo $strNoDatabases;
 }
 unset($databases_count);
+
+/**
+ * Create new database.
+ */
+if ($cfg['ShowCreateDb']) {
+    echo '<ul><li id="li_create_database">' . "\n";
+    require './libraries/display_create_database.lib.php';
+    echo '    </li>' . "\n";
+    echo '</ul>' . "\n";
+}
+
+/**
+ * Sends the footer
+ */
+require_once './libraries/footer.inc.php';
 
 ?>

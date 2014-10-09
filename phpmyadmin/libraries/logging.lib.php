@@ -5,22 +5,11 @@
  *
  * This includes web server specific code to log some information.
  *
- * @package PhpMyAdmin
+ * @version $Id: logging.lib.php 12285 2009-03-03 16:44:33Z nijel $
+ * @package phpMyAdmin
  */
-if (! defined('PHPMYADMIN')) {
-    exit;
-}
 
-/**
- * Logs user information to webserver logs.
- *
- * @param string $user   user name
- * @param string $status status message
- *
- * @return void
- */
-function PMA_log_user($user, $status = 'ok')
-{
+function PMA_log_user($user, $status = 'ok'){
     if (function_exists('apache_note')) {
         apache_note('userID', $user);
         apache_note('userStatus', $status);

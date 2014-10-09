@@ -1,32 +1,24 @@
 <?php
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
- * @package PhpMyAdmin-Engines
+ * @version $Id: bdb.lib.php 11981 2008-11-24 10:18:44Z nijel $
+ * @package phpMyAdmin-Engines
  */
-if (! defined('PHPMYADMIN')) {
-    exit;
-}
-
-if (! defined('PHPMYADMIN')) {
-    exit;
-}
 
 /**
  *
- * @package PhpMyAdmin-Engines
+ * @package phpMyAdmin-Engines
  */
 class PMA_StorageEngine_bdb extends PMA_StorageEngine
 {
     /**
-     * Returns array with variable names related to this storage engine
-     *
-     * @return array   variable names
+     * @return  array   variable names
      */
     function getVariables()
     {
         return array(
             'version_bdb' => array(
-                'title' => __('Version information'),
+                'title' => $GLOBALS['strVersionInformation'],
             ),
             'bdb_cache_size' => array(
                 'type'  => PMA_ENGINE_DETAILS_TYPE_SIZE,
@@ -63,10 +55,7 @@ class PMA_StorageEngine_bdb extends PMA_StorageEngine
     }
 
     /**
-     * Returns the pattern to be used in the query for SQL variables
-     * related to this storage engine
-     *
-     * @return string LIKE pattern
+     * @return string   LIKE pattern
      */
     function getVariablesLikePattern()
     {
@@ -75,9 +64,9 @@ class PMA_StorageEngine_bdb extends PMA_StorageEngine
 
     /**
      * returns string with filename for the MySQL helppage
-     * about this storage engine
+     * about this storage engne
      *
-     * @return string  mysql helppage filename
+     * @return  string  mysql helppage filename
      */
     function getMysqlHelpPage()
     {

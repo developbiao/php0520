@@ -2,16 +2,19 @@
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  *
- * @package PhpMyAdmin
+ * @version $Id: tbl_move_copy.php 11994 2008-11-24 11:22:44Z nijel $
+ * @package phpMyAdmin
  */
 
 /**
  * Gets some core libraries
  */
-require_once 'libraries/common.inc.php';
+require_once './libraries/common.inc.php';
+require_once './libraries/Table.class.php';
 
 // Check parameters
-PMA_Util::checkParameters(array('db', 'table'));
+
+PMA_checkParameters(array('db', 'table'));
 
 /**
  * Defines the url to return to in case of error in a sql statement
@@ -40,64 +43,48 @@ if (empty($_REQUEST['target_db'])) {
 if (PMA_isValid($_REQUEST['new_name'])) {
     if ($db == $_REQUEST['target_db'] && $table == $_REQUEST['new_name']) {
         if (isset($_REQUEST['submit_move'])) {
-            $message = PMA_Message::error(__('Can\'t move table to same one!'));
+            $message = PMA_Message::error('strMoveTableSameNames');
         } else {
-            $message = PMA_Message::error(__('Can\'t copy table to same one!'));
+            $message = PMA_Message::error('strCopyTableSameNames');
         }
-        $result = false;
+        $goto = './tbl_operations.php';
     } else {
-        $result = PMA_Table::moveCopy(
-            $db, $table, $_REQUEST['target_db'], $_REQUEST['new_name'],
-            $_REQUEST['what'], isset($_REQUEST['submit_move']), 'one_table'
-        );
+        PMA_Table::moveCopy($db, $table, $_REQUEST['target_db'], $_REQUEST['new_name'],
+            $_REQUEST['what'], isset($_REQUEST['submit_move']), 'one_table');
 
         if (isset($_REQUEST['submit_move'])) {
-            $message = PMA_Message::success(__('Table %s has been moved to %s.'));
+            $message = PMA_Message::success('strMoveTableOK');
         } else {
-            $message = PMA_Message::success(__('Table %s has been copied to %s.'));
+            $message = PMA_Message::success('strCopyTableOK');
         }
-        $old = PMA_Util::backquote($db) . '.'
-            . PMA_Util::backquote($table);
+        $old = PMA_backquote($db) . '.' . PMA_backquote($table);
         $message->addParam($old);
-        $new = PMA_Util::backquote($_REQUEST['target_db']) . '.'
-            . PMA_Util::backquote($_REQUEST['new_name']);
+        $new = PMA_backquote($_REQUEST['target_db']) . '.' . PMA_backquote($_REQUEST['new_name']);
         $message->addParam($new);
 
         /* Check: Work on new table or on old table? */
-        if (isset($_REQUEST['submit_move'])
-            || PMA_isValid($_REQUEST['switch_to_new'])
-        ) {
-            $db    = $_REQUEST['target_db'];
-            $table = $_REQUEST['new_name'];
+        if (isset($_REQUEST['submit_move']) || PMA_isValid($_REQUEST['switch_to_new'])) {
+            $db        = $_REQUEST['target_db'];
+            $table     = $_REQUEST['new_name'];
         }
         $reload = 1;
+
+        $disp_query = $sql_query;
+        $disp_message = $message;
+        unset($sql_query, $message);
+
+        $goto = $cfg['DefaultTabTable'];
     }
 } else {
     /**
      * No new name for the table!
      */
-    $message = PMA_Message::error(__('The table name is empty!'));
-    $result = false;
-}
-
-if ($GLOBALS['is_ajax_request'] == true) {
-    $response = PMA_Response::getInstance();
-    $response->addJSON('message', $message);
-    if ($message->isSuccess()) {
-        $response->addJSON('db', $GLOBALS['db']);
-        $response->addJSON(
-            'sql_query',
-            PMA_Util::getMessage(null, $sql_query)
-        );
-    } else {
-        $response->isSuccess(false);
-    }
-    exit;
+    $message = PMA_Message::error('strTableEmpty');
+    $goto = './tbl_operations.php';
 }
 
 /**
  * Back to the calling script
  */
-$_message = $message;
-unset($message);
+require $goto;
 ?>
