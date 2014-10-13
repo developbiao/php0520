@@ -13,16 +13,16 @@ $rstClass = mysql_query($sqlClass);
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>修改商品<title>
+	<title>修改商品</title>
 </head>
 <body>
 	<center>
-	<h3>修改商品</h3>	
-	<form action="update.php" method="post" enctype='multipart/form-data'>
+	<h3>修改商品信息</h3>	
+	<form action="update.php" method="post" enctype='mutlipart/form-data'>
 		<table width='' border='1px' cellspacing='0'>
 			<tr>
 				<td>商品:</td>
-				<td><input type="text" name="sname" value='<?php echo $rowShop['name']?>'</td>
+				<td><input type="text" name="sname" value='<?php echo $rowShop['name']?>'></td>
 			</tr>
 			<tr>
 				<td>图片:</td>
@@ -35,13 +35,13 @@ $rstClass = mysql_query($sqlClass);
 						<?php
 							while($rowClass=mysql_fetch_assoc($rstClass)){
 								echo "<option disabled>{$rowClass['name']}</option>";
-								$sqlBrand = "SELECT * FROM brand WHERE class_id={$rowClass[id]} ORDER BY id";
+								$sqlBrand = "SELECT * FROM brand WHERE shopclass_id={$rowClass[id]} ORDER BY id";
 								$rstBrand = mysql_query($sqlBrand);
 								while($rowBrand=mysql_fetch_assoc($rstBrand)){
 									if($rowShop[brand_id]==$rowBrand[id]){
-										echo "<option value='{$rowBrand[id]}' selected>|-</option>";
+										echo "<option value='{$rowBrand[id]}' selected>|-{$rowBrand[name]}</option>";
 									}else{
-										echo "<option value='{$rowBrand[id]}>|-</option>";
+										echo "<option value='{$rowBrand[id]}'>|-{$rowBrand['name']}</option>";
 									}
 
 								}
@@ -52,7 +52,7 @@ $rstClass = mysql_query($sqlClass);
 			</tr>
 			<tr>
 				<td>价格:</td>
-				<td><input type="text" name="price" value='<?php echo $rowShop['price']?>'/> </td>
+				<td><input type="text" name="price" value='<?php echo $rowShop['price']?>'/></td>
 			</tr>
 			<tr>
 				<td>库存:</td>

@@ -22,6 +22,7 @@
 		<table width='700px' border='1px' cellspacing='0'>
 			<tr>
 				<th>商品ID</th>
+				<th>商品</th>
 				<th>图片</th>
 				<th>品牌</th>
 				<th>分类</th>
@@ -48,7 +49,7 @@
 						echo "<td>下架</td>";
 					}
 					echo "<td><a href='edit.php?id={$rowShop['id']}'>修改</a></td>";
-					echo "<td><a href='delete.php?id={$rowShop['id']}&image={$rowShop[image]}'>删除</a></td>";
+					echo "<td><a href='del.php?id={$rowShop['id']}&image={$rowShop[image]}'>删除</a></td>";
 					echo "</tr>";
 				}
 			?>
