@@ -1,5 +1,6 @@
 <?php
 include "../../public/common/dbconfig.inc.php";
+include '../public/common/acl.inc.php';
 $id=$_GET['id'];
 $sql="DELETE FROM user WHERE id={$id}";
 if(mysql_query($sql)){

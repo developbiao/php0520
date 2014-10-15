@@ -5,6 +5,7 @@
 @Date:2014/09/24
 */
 include '../../public/common/dbconfig.inc.php';
+include '../public/common/acl.inc.php';
 $sqlUser='select * from user order by id';
 $rstUser=mysql_query($sqlUser);
 ?>

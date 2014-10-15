@@ -1,5 +1,6 @@
 <?php
 include '../../public/common/dbconfig.inc.php';
+include '../public/common/acl.inc.php';
 $id=$_GET['id'];
 $sqlUser="SELECT * FROM user WHERE id={$id}";
 $rstUser=mysql_query($sqlUser);

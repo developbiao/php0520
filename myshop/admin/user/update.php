@@ -3,6 +3,7 @@
 @Describe:update更新用户数据库信息
 */
 include '../../public/common/dbconfig.inc.php';
+include '../public/common/acl.inc.php';
 $username = $_POST['username'];
 $password= md5($_POST['password']);
 $repassword =md5($_POST['repassword']);

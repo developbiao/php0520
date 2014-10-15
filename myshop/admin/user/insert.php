@@ -3,6 +3,7 @@
 @Desribe:插入user用户到数据
 */
 include '../../public/common/dbconfig.inc.php';
+include '../public/common/acl.inc.php';
 $username=$_POST['username'];
 $password=md5($_POST['password']);
 $repassword=md5($_POST['repassword']);

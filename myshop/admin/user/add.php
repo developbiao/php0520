@@ -1,3 +1,6 @@
+<?php
+include '../public/common/acl.inc.php';
+?>
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
