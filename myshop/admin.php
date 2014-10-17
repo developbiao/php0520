@@ -1,3 +1,3 @@
 <?php
-echo "<h3>admin </h3>"
+echo "./admin/login/login.php";
 ?>
