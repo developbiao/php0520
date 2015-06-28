@@ -1,14 +1,14 @@
-@Describe:±ÏÒµÂÛÎÄÏîÄ¿-¡¶ÍøÉÏ¹ºÎïÊéµê¡·
-@Team:¹¨±ë¡¢µËÈª¡¢Ð»Áú
-@Class:Èí¿ª1234°à
+@Describe:é¡¹ç›®-ã€Šç½‘ä¸Šè´­ç‰©ä¹¦åº—ã€‹
+@Author:é¾šå½ª
+@Class:è½¯å¼€1234ç­
 @Date:2014/10/06
 
-
+Demo:http://bookstores.sinaapp.com
 -----------------------------------------------------
-		ÏîÄ¿²¿Êð
+		é¡¹ç›®éƒ¨ç½²
 -----------------------------------------------------
 
-1¡¢	½«¹¤³ÌÏîÄ¿ÎÄ¼þ¼ÐCopyµ½Ò»Ì¨°²×°ÁËLAMP»·¾³µÄLinux£¨ÍÆ¼ö£©Ö÷»ú»òÕßWindows»úµÄwebÄ¿Â¼ÏÂÃæ,ApacheÄ¬ÈÏÊÇ/var/wwwÄ¿Â¼¡£
-2¡¢	Êý¾Ý¿âÎÄ¼þÔÚ¸ÃÏîÄ¿µÄdataÄ¿Â¼ÏÂÃæ£¬Copyµ½MysqlµÄÊý¾Ý¿âÄ¿Â¼£¬ÔÚLinuxÖÐMysqlµÄÊý¾ÝÄ¿Â¼Ä¬ÈÏÂ·¾¶ÔÚ/var/lib/mysqlÏÂÃæ,ÎÄ¼þ¼ÐÃû¼°Êý¾Ý¿âÃû£¬Ö´ÐÐchown mysql.mysql °ÑÊý¾Ý¿âÎÄ¼þÌí¼ÓÈ¨ÏÞ»òÕßÊ¹ÓÃphpmyadminµ¼Èë/bookstore/bookstore.sql ÎÄ¼þÖÐµÄSQLÓï¾ä¡£
-3¡¢	ÐÞ¸ÄÊý¾Ý¿âÁ¬½ÓÅäÖÃÎÄ¼þ/bookstore/admin/public/common/config.inc.phpºÍ/bookstore/home/public/common/ocnfig.inc.php ½«Êý¾Ý¿âÁ¬½ÓµØÖ·ºÍÓÃ»§ÃûÐÞ¸ÄÎª±¾µØ»òÊµ¼ÊµÄIPÕËºÅ¡£
-4¡¢	´ò¿ªä¯ÀÀÆ÷·ÃÎÊhttp://127.0.0.1/bookstore »òhttp://localhost/bookstore Êµ¼ÊÅäÖÃµÄÍøÕ¾µØÖ·ÓÃ¿É´ò¿ªÏîÄ¿¡£
+1ã€	å°†å·¥ç¨‹é¡¹ç›®æ–‡ä»¶å¤¹Copyåˆ°ä¸€å°å®‰è£…äº†LAMPçŽ¯å¢ƒçš„Linuxï¼ˆæŽ¨èï¼‰ä¸»æœºæˆ–è€…Windowsæœºçš„webç›®å½•ä¸‹é¢,Apacheé»˜è®¤æ˜¯/var/wwwç›®å½•ã€‚
+2ã€	æ•°æ®åº“æ–‡ä»¶åœ¨è¯¥é¡¹ç›®çš„dataç›®å½•ä¸‹é¢ï¼ŒCopyåˆ°Mysqlçš„æ•°æ®åº“ç›®å½•ï¼Œåœ¨Linuxä¸­Mysqlçš„æ•°æ®ç›®å½•é»˜è®¤è·¯å¾„åœ¨/var/lib/mysqlä¸‹é¢,æ–‡ä»¶å¤¹ååŠæ•°æ®åº“åï¼Œæ‰§è¡Œchown mysql.mysql æŠŠæ•°æ®åº“æ–‡ä»¶æ·»åŠ æƒé™æˆ–è€…ä½¿ç”¨phpmyadminå¯¼å…¥/bookstore/bookstore.sql æ–‡ä»¶ä¸­çš„SQLè¯­å¥ã€‚
+3ã€	ä¿®æ”¹æ•°æ®åº“è¿žæŽ¥é…ç½®æ–‡ä»¶/bookstore/admin/public/common/config.inc.phpå’Œ/bookstore/home/public/common/ocnfig.inc.php å°†æ•°æ®åº“è¿žæŽ¥åœ°å€å’Œç”¨æˆ·åä¿®æ”¹ä¸ºæœ¬åœ°æˆ–å®žé™…çš„IPè´¦å·ã€‚
+4ã€	æ‰“å¼€æµè§ˆå™¨è®¿é—®http://127.0.0.1/bookstore æˆ–http://localhost/bookstore å®žé™…é…ç½®çš„ç½‘ç«™åœ°å€ç”¨å¯æ‰“å¼€é¡¹ç›®ã€‚
